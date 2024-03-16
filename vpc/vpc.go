@@ -8,7 +8,7 @@ import (
 	"github.com/aws/aws-sdk-go/service/ec2"
 )
 
-func PrivateSubnetsIds(vpcID string, region string) {
+func PrivateSubnetsIds(vpcID string, region string, tagName []string) {
 	// Create AWS session
 	sess, err := session.NewSession(&aws.Config{
 		Region: aws.String(region), // Change to your desired region
@@ -40,7 +40,7 @@ func PrivateSubnetsIds(vpcID string, region string) {
 	var privateSubnetIDs []string
 	for _, subnet := range describeOutput.Subnets {
 		for _, tag := range subnet.Tags {
-			if *tag.Key == "Name" && *tag.Value == "private" {
+			if *tag.Key == "Name" && *tag.Value == tagName[0] || *tag.Key == "Name" && *tag.Value == tagName[1] {
 				privateSubnetIDs = append(privateSubnetIDs, *subnet.SubnetId)
 			}
 		}
