@@ -86,7 +86,7 @@ func init() {
 	enc := json.NewEncoder(&bytes)
 	enc.Encode(tags)
 	json.Unmarshal(bytes.Bytes(), &tagValues)
-	fmt.Println(tagValues.Tags[3].Value)
+
 	// Create a new AWS session
 	sess, err = session.NewSession(&aws.Config{
 		Region: aws.String(args.Region), // Change the region as needed
@@ -99,9 +99,13 @@ func init() {
 
 func main() {
 
-	// vpcID := vpc.CreateVpc(sess, cidr)
-	// fmt.Println(vpcID)
-	vpcID := "vpc-0d86e0e3dcbd72948"
-	//vpc.CreatePrivateSubnets(sess, vpcID, private_subnet_1, private_subnet_2, tagValues)
-	vpc.CreatePublicSubnets(sess, vpcID, public_subnet_1, public_subnet_2, tagValues)
+	log.Println("\033[1;32m[+]\033[0m Creating VPC...")
+	vpcID := vpc.CreateVpc(sess, cidr)
+	log.Println("\033[1;32m[+]\033[0m Creating Private Subnets on vpcID:", vpcID)
+	privateSubnets := vpc.CreatePrivateSubnets(sess, vpcID, private_subnet_1, private_subnet_2, tagValues)
+	log.Println("\033[1;32m[+]\033[0m Creating Public Subnets on vpcID:", vpcID)
+	publicSubnets := vpc.CreatePublicSubnets(sess, vpcID, public_subnet_1, public_subnet_2, tagValues)
+
+	fmt.Println(privateSubnets)
+	fmt.Println(publicSubnets)
 }

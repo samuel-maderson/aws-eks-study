@@ -49,6 +49,7 @@ func CreateVpc(sess *session.Session, cidr string) string {
 
 func CreatePublicSubnets(sess *session.Session, vpcID string, subnet_1 string, subnet_2 string, tagValues types.SubnetTags) (subnets []string) {
 
+	firstTwo := tagValues.Tags[:2]
 	svc := ec2.New(sess)
 	// Create public subnets
 	publicSubnets := []string{subnet_1, subnet_2} // Change CIDR blocks as needed
@@ -69,8 +70,8 @@ func CreatePublicSubnets(sess *session.Session, vpcID string, subnet_1 string, s
 			Resources: []*string{result.Subnet.SubnetId},
 			Tags: []*ec2.Tag{
 				{
-					Key:   aws.String(tagValues.Tags[key].Key),
-					Value: aws.String(tagValues.Tags[key].Value),
+					Key:   aws.String(firstTwo[key].Key),
+					Value: aws.String(firstTwo[key].Value),
 				},
 			},
 		}
@@ -79,6 +80,8 @@ func CreatePublicSubnets(sess *session.Session, vpcID string, subnet_1 string, s
 			fmt.Println("Error adding tags to subnet:", err)
 			os.Exit(1)
 		}
+
+		subnets = append(subnets, *result.Subnet.SubnetId)
 	}
 
 	return subnets
@@ -86,6 +89,7 @@ func CreatePublicSubnets(sess *session.Session, vpcID string, subnet_1 string, s
 
 func CreatePrivateSubnets(sess *session.Session, vpcID string, subnet_1 string, subnet_2 string, tagValues types.SubnetTags) (subnets []string) {
 
+	lastTwo := tagValues.Tags[len(tagValues.Tags)-2:]
 	svc := ec2.New(sess)
 	// Create private subnets
 	privateSubnets := []string{subnet_1, subnet_2} // Change CIDR blocks as needed
@@ -104,8 +108,8 @@ func CreatePrivateSubnets(sess *session.Session, vpcID string, subnet_1 string, 
 			Resources: []*string{result.Subnet.SubnetId},
 			Tags: []*ec2.Tag{
 				{
-					Key:   aws.String(tagValues.Tags[key].Key),
-					Value: aws.String(tagValues.Tags[key].Value),
+					Key:   aws.String(lastTwo[key].Key),
+					Value: aws.String(lastTwo[key].Value),
 				},
 			},
 		}
@@ -115,7 +119,7 @@ func CreatePrivateSubnets(sess *session.Session, vpcID string, subnet_1 string, 
 			os.Exit(1)
 		}
 
-		fmt.Println(*result.Subnet.SubnetId)
+		subnets = append(subnets, *result.Subnet.SubnetId)
 	}
 
 	return subnets
