@@ -37,8 +37,6 @@ var (
 
 func init() {
 
-	// how to declare a slice of strings?
-
 	err = godotenv.Load()
 	if err != nil {
 		fmt.Println("Error loading .env file")
@@ -87,9 +85,8 @@ func init() {
 	enc.Encode(tags)
 	json.Unmarshal(bytes.Bytes(), &tagValues)
 
-	// Create a new AWS session
 	sess, err = session.NewSession(&aws.Config{
-		Region: aws.String(args.Region), // Change the region as needed
+		Region: aws.String(args.Region),
 	})
 	if err != nil {
 		fmt.Println("Error creating session:", err)

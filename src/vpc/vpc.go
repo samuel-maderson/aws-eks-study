@@ -14,10 +14,8 @@ import (
 
 func CreateVpc(sess *session.Session, cidr string) string {
 
-	// Create EC2 service client
 	svc := ec2.New(sess)
 
-	// Create VPC
 	vpcInput := &ec2.CreateVpcInput{
 		CidrBlock: aws.String(cidr),
 	}
@@ -27,7 +25,6 @@ func CreateVpc(sess *session.Session, cidr string) string {
 		log.Fatalln("Error creating VPC:", err)
 	}
 
-	// Add tags to the subnet
 	tagInput := &ec2.CreateTagsInput{
 		Resources: []*string{result.Vpc.VpcId},
 		Tags: []*ec2.Tag{
@@ -51,8 +48,8 @@ func CreatePublicSubnets(sess *session.Session, vpcID string, subnet_1 string, s
 
 	firstTwo := tagValues.Tags[:2]
 	svc := ec2.New(sess)
-	// Create public subnets
-	publicSubnets := []string{subnet_1, subnet_2} // Change CIDR blocks as needed
+
+	publicSubnets := []string{subnet_1, subnet_2}
 
 	for key, cidr := range publicSubnets {
 		subnetInput := &ec2.CreateSubnetInput{
@@ -65,7 +62,7 @@ func CreatePublicSubnets(sess *session.Session, vpcID string, subnet_1 string, s
 			fmt.Println("Error creating subnet:", err)
 			os.Exit(1)
 		}
-		// Add tags to the subnet
+
 		tagInput := &ec2.CreateTagsInput{
 			Resources: []*string{result.Subnet.SubnetId},
 			Tags: []*ec2.Tag{
@@ -91,8 +88,8 @@ func CreatePrivateSubnets(sess *session.Session, vpcID string, subnet_1 string, 
 
 	lastTwo := tagValues.Tags[len(tagValues.Tags)-2:]
 	svc := ec2.New(sess)
-	// Create private subnets
-	privateSubnets := []string{subnet_1, subnet_2} // Change CIDR blocks as needed
+
+	privateSubnets := []string{subnet_1, subnet_2}
 	for key, cidr := range privateSubnets {
 		subnetInput := &ec2.CreateSubnetInput{
 			CidrBlock: aws.String(cidr),
@@ -103,7 +100,7 @@ func CreatePrivateSubnets(sess *session.Session, vpcID string, subnet_1 string, 
 			fmt.Println("Error creating subnet:", err)
 			os.Exit(1)
 		}
-		// Add tags to the subnet
+
 		tagInput := &ec2.CreateTagsInput{
 			Resources: []*string{result.Subnet.SubnetId},
 			Tags: []*ec2.Tag{
