@@ -9,6 +9,7 @@
 *.dylib
 
 secrets.txt
+*.pem
 
 # Test binary, built with `go test -c`
 *.test
